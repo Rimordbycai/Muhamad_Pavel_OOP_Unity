@@ -46,6 +46,8 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
         }
+
+        MoveBound();
     }
 
 
@@ -56,8 +58,18 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void MoveBound()
-    {
-        // Placeholder for future boundary logic
+    {   
+        float boundaryPadding = 0.5f;
+        float camHeight = Camera.main.orthographicSize;
+        float camWidth = camHeight * Camera.main.aspect;
+
+        // Calculate position with boundary padding applied
+        Vector3 playerPos = transform.position;
+        playerPos.x = Mathf.Clamp(playerPos.x, -camWidth + boundaryPadding, camWidth - boundaryPadding);
+        playerPos.y = Mathf.Clamp(playerPos.y, -camHeight + boundaryPadding, camHeight - boundaryPadding);
+
+        // Apply clamped position back to player
+        transform.position = playerPos;
     }
 
     public bool IsMoving()

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CombatManager : MonoBehaviour
@@ -8,11 +7,15 @@ public class CombatManager : MonoBehaviour
     public float timer = 0; // Timer to track wave intervals
     [SerializeField] private float waveInterval = 5f; // Time between waves
     public int waveNumber = 1; // Current wave number
-    public int totalEnemies = 0; // Total enemies spawned
+    public int totalEnemiesDefeated = 0; // Total enemies defeated across all waves
 
     private void Start()
     {
-        StartWave();
+        waveNumber = 0;
+        foreach (EnemySpawner enemySpawner in enemySpawners)
+        {
+            enemySpawner.combatManager = this;
+        }
     }
 
     private void Update()
@@ -36,25 +39,26 @@ public class CombatManager : MonoBehaviour
         {
             if (spawner != null)
             {
-                spawner.defaultSpawnCount = waveNumber; // Increase spawn count per wave
-                spawner.spawnCountMultiplier = 1; // Reset multiplier
-                spawner.isSpawning = true;
+                spawner.defaultSpawnCount = waveNumber; // Set spawn count based on wave number
+                spawner.spawnCountMultiplier = 1; // Reset multiplier for new wave
+                spawner.isSpawning = true; // Activate spawner
             }
         }
     }
 
     private void StartNextWave()
     {
+        timer = 0;
         waveNumber++;
-        totalEnemies = 0;
+        totalEnemiesDefeated = 0; // Reset enemy defeat count for the new wave
 
-        foreach (var spawner in enemySpawners)
+        foreach (EnemySpawner enemySpawner in enemySpawners)
         {
-            if (spawner != null)
+            if (enemySpawner != null)
             {
-                spawner.defaultSpawnCount = waveNumber; // Adjust spawn count
-                spawner.multiplierIncreaseCount = waveNumber; // Increase difficulty
-                spawner.isSpawning = true;
+                enemySpawner.defaultSpawnCount = waveNumber; // Adjust spawn count for the wave
+                enemySpawner.spawnCountMultiplier = waveNumber; // Increase spawn rate or difficulty
+                enemySpawner.isSpawning = true; // Restart spawners
             }
         }
     }
@@ -65,15 +69,16 @@ public class CombatManager : MonoBehaviour
         {
             if (spawner != null && spawner.isSpawning)
             {
-                return false; // If any spawner is still active, waves aren't finished
+                return false; // If any spawner is still active, wave isn't finished
             }
         }
-        return true; // All spawners are inactive, wave is finished
+        return true; // All spawners have finished spawning
     }
 
     public void RegisterKill()
     {
-        totalEnemies++;
+        totalEnemiesDefeated++;
+        // Optionally, handle logic here for when a kill impacts gameplay globally.
+        Debug.Log($"Total enemies defeated: {totalEnemiesDefeated}");
     }
 }
-

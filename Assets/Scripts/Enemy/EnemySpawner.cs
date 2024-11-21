@@ -7,81 +7,91 @@ public class EnemySpawner : MonoBehaviour
     [Header("Enemy Prefabs")]
     public Enemy spawnedEnemy;
 
-    [SerializeField] private int minimumKillsToIncreaseSpawnCount = 3;
-    public int totalKill = 0;
-    private int totalKillWave = 0;
+    [SerializeField] private int minimumKillsToIncreaseSpawnCount = 3; // Minimum kills to increase spawn count
+    public int totalKill = 0; // Total kills by the player
+    private int totalKillWave = 0; // Kills within the current wave
 
-    [SerializeField] private float spawnInterval = 3f;
+    [SerializeField] private float spawnInterval = 3f; // Time between spawns
 
     [Header("Spawned Enemies Counter")]
-    public int spawnCount = 0;
-    public int defaultSpawnCount = 1;
-    public int spawnCountMultiplier = 1;
-    public int multiplierIncreaseCount = 1;
+    public int spawnCount = 0; // Remaining enemies to spawn in the current wave
+    public int defaultSpawnCount = 1; // Base spawn count
+    public int spawnCountMultiplier = 1; // Spawn scaling multiplier
+    public int multiplierIncreaseCount = 1; // Amount to increase the multiplier by
 
-    public CombatManager combatManager;
+    public CombatManager combatManager; // Reference to the CombatManager
 
-    public bool isSpawning = false;
+    public bool isSpawning = false; // Whether spawning is active
 
     private void Start()
     {
-        StartCoroutine(SpawnEnemies());
+        spawnCount = defaultSpawnCount; // Initialize spawn count
     }
 
-    private IEnumerator SpawnEnemies()
-    {
-        while (true)
-        {
-            if (isSpawning)
-            {
-                for (int i = 0; i < spawnCount; i++)
-                {
-                    SpawnEnemy();
-                }
-
-                totalKillWave = 0;
-                while (totalKillWave < spawnCount)
-                {
-                    yield return null; // Wait for the current wave's kills
-                }
-
-                // Check if it's time to increase the spawn count
-                if (totalKill >= minimumKillsToIncreaseSpawnCount * multiplierIncreaseCount)
-                {
-                    spawnCountMultiplier++;
-                    spawnCount = defaultSpawnCount * spawnCountMultiplier;
-                    multiplierIncreaseCount++;
-                }
-            }
-
-            yield return new WaitForSeconds(spawnInterval);
-        }
-    }
-
-    private void SpawnEnemy()
-    {
-        if (spawnedEnemy != null)
-        {
-            Enemy newEnemy = Instantiate(spawnedEnemy, transform.position, Quaternion.identity);
-
-            // Activate the enemy after a delay using the method provided in Enemy
-            StartCoroutine(newEnemy.ActivateAfterDelay(0f)); // Adjust the delay as needed
-        }
-        else
-        {
-            Debug.LogError("No enemy prefab assigned!");
-        }
-    }
-
-    // Method to start spawning
-    public void StartSpawning()
-    {
-        isSpawning = true;
-    }
-
-    // Method to stop spawning
     public void StopSpawning()
     {
         isSpawning = false;
+    }
+
+    public void StartSpawning()
+    {
+        // Only start spawning if the enemy's level is less than or equal to the current wave number
+        if (spawnedEnemy.Level <= combatManager.waveNumber)
+        {
+            isSpawning = true;
+            StartCoroutine(SpawnEnemies());
+        }
+    }
+
+    public IEnumerator SpawnEnemies()
+    {
+        if (isSpawning)
+        {
+            // If spawn count is 0, reset it to the default spawn count
+            if (spawnCount == 0)
+            {
+                spawnCount = defaultSpawnCount;
+            }
+
+            int enemiesToSpawn = spawnCount;
+            while (enemiesToSpawn > 0)
+            {
+                // Instantiate the enemy
+                Enemy enemy = Instantiate(spawnedEnemy);
+                enemy.GetComponent<Enemy>().enemySpawner = this;
+                enemy.GetComponent<Enemy>().combatManager = combatManager; // Set the combat manager reference
+                enemiesToSpawn--;
+                spawnCount = enemiesToSpawn;
+
+                // Increment the total enemies count in the CombatManager
+                if (combatManager != null)
+                {
+                    combatManager.totalEnemiesDefeated++;
+                }
+
+                yield return new WaitForSeconds(spawnInterval); // Wait before spawning the next enemy
+            }
+        }
+    }
+
+    public void OnDeath()
+    {
+        Debug.Log("Enemy Killed");
+        totalKill++; // Increment total kills
+        totalKillWave++; // Increment kills in the current wave
+        // Check if total kills in the wave have reached the threshold to increase spawn count
+        if (totalKillWave >= minimumKillsToIncreaseSpawnCount)
+        {
+            Debug.Log("Increasing spawn count");
+            totalKillWave = 0; // Reset the wave kill counter
+            defaultSpawnCount *= spawnCountMultiplier; // Increase default spawn count
+            spawnCount = defaultSpawnCount; // Update spawn count for the spawner
+
+            // Increment spawn count multiplier for scaling, with a limit
+            if (spawnCountMultiplier < 3)
+            {
+                spawnCountMultiplier += multiplierIncreaseCount;
+            }
+        }
     }
 }

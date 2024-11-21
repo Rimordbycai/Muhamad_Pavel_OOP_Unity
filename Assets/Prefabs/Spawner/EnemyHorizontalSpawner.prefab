@@ -45,9 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnedEnemy: {fileID: 7309225368657965727, guid: d3da2eb2a940b294b84e4431122ce675, type: 3}
-  minimumKillsToIncreaseSpawnCount: 10
+  minimumKillsToIncreaseSpawnCount: 6
   totalKill: 0
-  spawnInterval: 8
+  spawnInterval: 3
   spawnCount: 1
   defaultSpawnCount: 2
   spawnCountMultiplier: 1

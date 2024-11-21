@@ -20,6 +20,7 @@ public class HealthComponent : MonoBehaviour
     public void Subtract(float damage)
     {
         health -= damage;
+        Debug.Log($"Health reduced by {damage}. Current health: {health}");
         if (health <= 0)
         {
             Destroy(gameObject); // Destroy the object when health is 0 or less

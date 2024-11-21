@@ -22,18 +22,12 @@ public class Bullet : MonoBehaviour
         ObjectPool = pool;
     }
 
-    public void Initialize()
+    public void FixedUpdate()
     {
         // Set velocity of bullet to move upwards
         if (rb == null) rb = GetComponent<Rigidbody2D>();
         rb.velocity = transform.up * bulletSpeed;
     }
-
-    private void ReturnToPool()
-    {
-        ObjectPool.Release(this);
-    }
-
     void OnTriggerEnter2D(Collider2D collision)
     {
         var hitbox = collision.GetComponent<HitboxComponent>();
@@ -41,21 +35,16 @@ public class Bullet : MonoBehaviour
         {
             // Apply damage to the enemy
             hitbox.Damage(damage);
-        }
+            ObjectPool.Release(this);
+        }   
+    }
 
-        ObjectPool.Release(this);
-        /* Return to pool upon collision with another object
-        if (collision.CompareTag("Enemy") || collision.CompareTag("Obstacle"))
+    private void OnBecameInvisible()
+    {
+        // Add condition to check if the bullet should be released
+        if (gameObject.activeSelf && ObjectPool != null)
         {
             ObjectPool.Release(this);
         }
-        */
-    }
-
-
-    
-    public void SetDamage(int damageAmount)
-    {
-        damage = damageAmount;
     }
 }

@@ -34,6 +34,7 @@ public class WeaponPickup : MonoBehaviour
             {
                 playerWeapon.transform.SetParent(transform, false);
                 playerWeapon.transform.localPosition = Vector3.zero;
+                gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 TurnVisual(false, playerWeapon);
             }
             
@@ -41,6 +42,7 @@ public class WeaponPickup : MonoBehaviour
             weapon.transform.SetParent(Player.Instance.transform);
             weapon.transform.localPosition = Vector3.zero;
             weapon.transform.localScale = Vector3.one; 
+            gameObject.GetComponent<SpriteRenderer>().enabled = false;
 
             // Enable the weapon's visuals
             TurnVisual(true, weapon);

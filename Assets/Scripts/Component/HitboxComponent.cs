@@ -6,11 +6,13 @@ using UnityEngine;
 public class HitboxComponent : MonoBehaviour
 {
     [SerializeField] private HealthComponent healthComponent;
+    private InvicibiltyComponent invincibilityComponent; 
 
     private void Start()
     {
         // Fetch the HealthComponent attached to the same GameObject or parent
         healthComponent = GetComponent<HealthComponent>(); 
+        invincibilityComponent = GetComponent<InvicibiltyComponent>();
         if (healthComponent == null)
         {
             Debug.LogError("HealthComponent not found on " + gameObject.name);
@@ -20,15 +22,23 @@ public class HitboxComponent : MonoBehaviour
     // Method to damage using Bullet
     public void Damage(Bullet bullet)
     {
-        if (healthComponent != null)
+        if (invincibilityComponent != null && !invincibilityComponent.isInvincible) // Cek apakah invincible
         {
-            healthComponent.Subtract(bullet.damage); // Decrease health based on Bullet damage
+            if (healthComponent != null)
+            {
+                Debug.Log("Applying bullet damage.");
+                healthComponent.Subtract(bullet.damage); // Kurangi health berdasarkan damage dari bullet
+            }
         }
     }
 
     // Method to damage using an integer value
     public void Damage(int damage)
     {
-        healthComponent.Subtract(damage); // Decrease health based on the integer damage
+        if (invincibilityComponent != null && !invincibilityComponent.isInvincible) // Cek apakah invincible
+        {
+            Debug.Log("Applying integer damage.");
+            healthComponent.Subtract(damage); // Kurangi health berdasarkan damage integer
+        }
     }
 }

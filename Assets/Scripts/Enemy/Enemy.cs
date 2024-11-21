@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour
     }
 
     // Fungsi untuk mengaktifkan Enemy setelah waktu tertentu
-    protected IEnumerator ActivateAfterDelay(float delay)
+    public IEnumerator ActivateAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         gameObject.SetActive(true);

@@ -27,7 +27,8 @@ public class HitboxComponent : MonoBehaviour
             if (healthComponent != null)
             {
                 Debug.Log("Applying bullet damage.");
-                healthComponent.Subtract(bullet.damage); // Kurangi health berdasarkan damage dari bullet
+                healthComponent.Subtract(bullet.damage);
+                invincibilityComponent.StartInvincibility();  // Kurangi health berdasarkan damage dari bullet
             }
         }
     }
@@ -38,7 +39,26 @@ public class HitboxComponent : MonoBehaviour
         if (invincibilityComponent != null && !invincibilityComponent.isInvincible) // Cek apakah invincible
         {
             Debug.Log("Applying integer damage.");
-            healthComponent.Subtract(damage); // Kurangi health berdasarkan damage integer
+            healthComponent.Subtract(damage);
+            invincibilityComponent.StartInvincibility();  // Kurangi health berdasarkan damage integer
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Check if the collided object has the "Bullet" tag
+        if (other.CompareTag("Bullet"))
+        {
+            Bullet bullet = other.GetComponent<Bullet>();
+
+            if (bullet != null)
+            {
+                Debug.Log("Hit by bullet: " + bullet.name);
+                Damage(bullet); // Apply damage from the bullet
+
+                // Optionally, destroy the bullet after it hits
+                Destroy(other.gameObject);
+            }
         }
     }
 }

@@ -420,6 +420,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Level: 3
+  enemySpawner: {fileID: 0}
+  combatManager: {fileID: 0}
   speed: 5
 --- !u!114 &2387315139699133124
 MonoBehaviour:

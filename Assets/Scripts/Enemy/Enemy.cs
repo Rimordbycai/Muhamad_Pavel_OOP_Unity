@@ -12,14 +12,11 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-
         if (enemySpawner != null && combatManager != null)
         {
             enemySpawner.OnDeath();
-            combatManager.RegisterKill();
-
+            combatManager.RegisterKill(Level);
         }
-
     }
     void Start()
     {

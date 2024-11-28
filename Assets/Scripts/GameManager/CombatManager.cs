@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class CombatManager : MonoBehaviour
 {
-    public EnemySpawner[] enemySpawners; // Array of spawners
+    public EnemySpawner[] enemySpawners;
+    public GameStats gameStats;  // Array of spawners
     public float timer = 0; // Timer to track wave intervals
     [SerializeField] private float waveInterval = 5f; // Time between waves
     public int waveNumber = 1; // Current wave number
-    public int totalEnemiesDefeated = 0; // Total enemies defeated across all waves
+    public int totalEnemiesDefeated = 0;
+    private int totalEnemiesInCurrentWave = 0; // Total enemies to spawn in current wave
+    private int totalPoints = 0; // Total enemies defeated across all waves
 
     private void Start()
     {
@@ -17,6 +20,10 @@ public class CombatManager : MonoBehaviour
         {
             enemySpawner.combatManager = this;
         }
+
+        gameStats.UpdateWave(waveNumber);
+        gameStats.UpdateEnemiesLeft(totalEnemiesDefeated);
+        gameStats.UpdatePoints(totalPoints);
     }
 
     private void Update()
@@ -33,33 +40,29 @@ public class CombatManager : MonoBehaviour
             }
         }
     }
-
-    private void StartWave()
-    {
-        foreach (var spawner in enemySpawners)
-        {
-            if (spawner != null)
-            {
-                spawner.defaultSpawnCount = waveNumber; // Set spawn count based on wave number
-                spawner.spawnCountMultiplier = 1; // Reset multiplier for new wave
-                spawner.isSpawning = true; // Activate spawner
-            }
-        }
-    }
-
     private void StartNextWave()
     {
         timer = 0;
         waveNumber++;
-        totalEnemiesDefeated = 0; // Reset enemy defeat count for the new wave
+        totalEnemiesInCurrentWave = 0;
+        totalEnemiesLeftInWave = 0; // Reset total enemies for new wave
+
+        foreach (EnemySpawner spawner in enemySpawners)
+        {
+            if (spawner != null)
+            {
+                totalEnemiesInCurrentWave += spawner.spawnCount; // Add spawn count of each spawner
+            }
+        }
+        
+        gameStats.UpdateWave(waveNumber);
+        gameStats.UpdateEnemiesLeft(totalEnemiesInCurrentWave);
 
         foreach (EnemySpawner enemySpawner in enemySpawners)
         {
             if (enemySpawner != null)
             {
-                enemySpawner.defaultSpawnCount = waveNumber; // Adjust spawn count for the wave
-                enemySpawner.spawnCountMultiplier = waveNumber; // Increase spawn rate or difficulty
-                enemySpawner.isSpawning = true; // Restart spawners
+                enemySpawner.StartSpawning(); // Restart spawners
             }
         }
     }
@@ -76,10 +79,12 @@ public class CombatManager : MonoBehaviour
         return true; // All spawners have finished spawning
     }
 
-    public void RegisterKill()
+    public void RegisterKill(int enemyLevel)
     {
         totalEnemiesDefeated++;
+        totalPoints += enemyLevel;  // Add points based on the enemy level
         // Optionally, handle logic here for when a kill impacts gameplay globally.
         Debug.Log($"Total enemies defeated: {totalEnemiesDefeated}");
+        gameStats.UpdatePoints(totalPoints);
     }
 }

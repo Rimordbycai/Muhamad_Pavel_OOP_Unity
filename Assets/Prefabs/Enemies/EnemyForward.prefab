@@ -176,7 +176,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Level: 1
-  speed: 1
+  enemySpawner: {fileID: 0}
+  combatManager: {fileID: 0}
+  speed: 5
 --- !u!114 &8219116299229629974
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,59 +1,49 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class GameStats : MonoBehaviour
+public class UI : MonoBehaviour
 {
-    public VisualElement rootVisualElement;
-
-    private Label healthLabel;
-    private Label enemiesLeftLabel;
-    private Label waveLabel;
     private Label pointsLabel;
+    private Label healthLabel;
+    private Label waveLabel;
+    private Label enemiesLabel;
 
-    private HealthComponent playerHealthComponent;
+    private Player player;
+    private CombatManager combatManager;
 
-    private void OnEnable()
+    void Start()
     {
-        var uiDocument = GetComponent<UIDocument>();
-        rootVisualElement = uiDocument.rootVisualElement;
+        var root = GetComponent<UIDocument>().rootVisualElement;
+        pointsLabel = root.Q<Label>("point");
+        healthLabel = root.Q<Label>("health");
+        waveLabel = root.Q<Label>("wave");
+        enemiesLabel = root.Q<Label>("enemiesleft");
 
-        healthLabel = rootVisualElement.Q<Label>("health");
-        enemiesLeftLabel = rootVisualElement.Q<Label>("enemiesleft");
-        waveLabel = rootVisualElement.Q<Label>("wave");
-        pointsLabel = rootVisualElement.Q<Label>("point");
+        player = Player.Instance;
+        combatManager = FindObjectOfType<CombatManager>();
+    }
 
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        if (playerObject != null)
+    void Update()
+    {
+        if (player != null && healthLabel != null)
         {
-            playerHealthComponent = playerObject.GetComponent<HealthComponent>();
+            healthLabel.text = "Health: " + player.GetComponent<HealthComponent>().Health;
         }
-    }
 
-    public void UpdateHealth(float health)
-    {
-        healthLabel.text = $"Health: {health}";
-    }
-
-    public void UpdateEnemiesLeft(int enemiesLeft)
-    {
-        enemiesLeftLabel.text = $"Enemies Left: {enemiesLeft}";
-    }
-
-    public void UpdateWave(int wave)
-    {
-        waveLabel.text = $"Wave: {wave}";
-    }
-
-    public void UpdatePoints(int points)
-    {
-        pointsLabel.text = $"Points: {points}";
-    }
-
-    private void Update()
-    {
-        if (playerHealthComponent != null)
+        if (combatManager != null)
         {
-            UpdateHealth(playerHealthComponent.Health);
+            if (pointsLabel != null)
+            {
+                pointsLabel.text = "Points: " + combatManager.totalPoints;
+            }
+            if (waveLabel != null)
+            {
+                waveLabel.text = "Wave: " + combatManager.waveNumber;
+            }
+            if (enemiesLabel != null)
+            {
+                enemiesLabel.text = "Enemies Left: " + combatManager.totalEnemies;
+            }
         }
     }
 }

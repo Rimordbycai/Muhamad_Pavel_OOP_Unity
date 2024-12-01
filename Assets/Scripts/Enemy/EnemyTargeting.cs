@@ -6,7 +6,6 @@ public class EnemyTargeting : Enemy
 {
     private Transform playerTransform; // Posisi Player
     private float speed = 2.0f;        // Kecepatan gerakan enemy
-   // Prefab EnemyTargeting
 
     private void Start()
     {

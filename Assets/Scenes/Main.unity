@@ -277,11 +277,11 @@ MonoBehaviour:
   - {fileID: 6015485484064626772}
   - {fileID: 1123759433959712581}
   - {fileID: 6609757067717327469}
-  gameStats: {fileID: 285052848}
   timer: 0
   waveInterval: 5
   waveNumber: 1
-  totalEnemiesDefeated: 0
+  totalEnemies: 0
+  totalPoints: 0
 --- !u!4 &670683955
 Transform:
   m_ObjectHideFlags: 0
@@ -608,6 +608,10 @@ PrefabInstance:
       propertyPath: combatManager
       value: 
       objectReference: {fileID: 670683954}
+    - target: {fileID: 2609626677845459086, guid: 597618ec1875ca747a8be21f7f67ab5d, type: 3}
+      propertyPath: defaultSpawnCount
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4236120655120717879, guid: 597618ec1875ca747a8be21f7f67ab5d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -760,6 +764,10 @@ PrefabInstance:
       propertyPath: combatManager
       value: 
       objectReference: {fileID: 670683954}
+    - target: {fileID: 3874571915235336622, guid: 489d76e6185f45c4d8a11d09131c6364, type: 3}
+      propertyPath: defaultSpawnCount
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5217159300944304105, guid: 489d76e6185f45c4d8a11d09131c6364, type: 3}
       propertyPath: m_Name
       value: EnemyHorizontalSpawner

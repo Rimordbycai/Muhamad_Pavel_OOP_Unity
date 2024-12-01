@@ -15,14 +15,12 @@ public class EnemySpawner : MonoBehaviour
     public int multiplierIncreaseCount = 1;
 
     public CombatManager combatManager;
-    public GameStats gameStats; // Reference to GameStats to update UI
 
     public bool isSpawning = false;
 
     private void Start()
     {
-        spawnCount = defaultSpawnCount;
-        gameStats.UpdateEnemiesLeft(spawnCount); // Initialize enemies left in the UI
+        spawnCount = defaultSpawnCount;// Initialize enemies left in the UI
     }
 
     public void StopSpawning()
@@ -59,13 +57,8 @@ public class EnemySpawner : MonoBehaviour
                 enemiesToSpawn--;
                 spawnCount = enemiesToSpawn;
 
-                // Register the spawned enemy in the CombatManager
-                //combatManager.RegisterKill(enemy.Level);
-
                 yield return new WaitForSeconds(spawnInterval);
             }
-
-            StopSpawning();
         }
     }
 
@@ -73,22 +66,19 @@ public class EnemySpawner : MonoBehaviour
     {
         Debug.Log("Enemy Killed");
         totalKill++;
-        totalKillWave++;
+        ++totalKillWave;
 
-        if (totalKillWave >= minimumKillsToIncreaseSpawnCount)
+        if (totalKillWave == minimumKillsToIncreaseSpawnCount)
         {
             Debug.Log("Increasing spawn count");
             totalKillWave = 0;
             defaultSpawnCount *= spawnCountMultiplier;
-            spawnCount = defaultSpawnCount;
-
+            
             if (spawnCountMultiplier < 3)
             {
                 spawnCountMultiplier += multiplierIncreaseCount;
             }
+            spawnCount = defaultSpawnCount;
         }
-
-        combatManager.RegisterKill(spawnedEnemy.Level);
-        gameStats.UpdatePoints(totalKill); // Update points in the UI
     }
 }
